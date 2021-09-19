@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-
-    <link rel="stylesheet" href="">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Amerika Repository {% block title %}{% endblock %}</title>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -18,6 +18,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarScroll">
+    {% if session.user_id %}
     <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll" style="max-height: 100px;">
       <li class="nav-item active">
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
@@ -40,10 +41,16 @@
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Link</a>
       </li>
     </ul>
+    {% else %}
+    <ul class="navbar-nav m1-auto mt-3">
+      <li class="nav-item"><a class="nav-link" href="./register.html">Register</a></li>
+      <li class="nav-item"><a class="nav-link" href="./login.html">Log In</a></li>
+    </ul>
     <form class="d-flex">
       <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
+    {% endif %}
   </div>
 </nav>
 </body>

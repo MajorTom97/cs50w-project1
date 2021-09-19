@@ -5,6 +5,9 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.exceptions import default_exceptions
+from werkzeug.security import check_password_hash, generate_password_hash
+
 
 app = Flask(__name__)
 
@@ -123,3 +126,13 @@ def index():
 
 
     return render_template("index.html")
+
+# return jsonify({
+#                 "title":title,
+#                 "author":author,
+#                 "isbn":isbn,
+#                 "year":year,
+#                 "review_count":"No contiene",
+#                 "average_score":"No contiene"
+#             })
+# href=/libro/{{libro.id}}
