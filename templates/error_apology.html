@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+It seems to happended an error :(!!!
+{% endblock %}
+
+{% block main %}
+
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+    <div class="error"><p>{{ code }}</p></div>
+    <div class="error"><p>{{ err }}</p></div>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+We have found!
+{% endblock %}
+
+{% block body %}
+<div class="books_list">
+    {% for book in books_list %}
+    <div class="book">
+        <h2 class="book-title">{{book['title']}}</h2>
+        <div class="book-cover">
+            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-M.jpg" alt="">
+        </div>
+        <h5 class="book-ft">ISBN: {{book.isbn}}</h5>
+        <h5 class="book-ft">Author: {{book.author}}</h5>
+        <h5 class="book-ft">Published Year: {{book.published_yr}}</h5>
+        <button type="button" class="btn btn-info">
+            <a href="/book/{{book.isbn}}" class="b-link">See it</a>
+        </button>
+    </div>
+</div>
