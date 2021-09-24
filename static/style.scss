@@ -1,0 +1,69 @@
+$color: gray;
+$fontsize: 14px;
+$image: url(../img/bookgrunge.jpg);
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: rgb(219, 208, 208);
+    color: black;
+    font-size: black;
+    font-family: 'Mali', cursive;
+      
+}
+
+@media screen and (max-width: 992px) {
+    body {
+      background-color: aquamarine;
+    }
+  }
+  
+  @media screen and (max-width: 600px) {
+    body {
+      background-color: olivedrab;
+    }
+  }
+.row{
+    background-color: white;
+    border-radius: 30px;
+    box-shadow: 12px 12px 22px grey;
+}
+img{
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+.btn1{
+    border:none;
+    outline: none;
+    height: 50px;
+    width: 100%;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.btn1:hover{
+    background: white;
+    border: 1px solid;
+    color: black;
+}
+
+%align{
+    text-align: center;
+    text-decoration: dashed;
+    text-shadow: none;
+}
+
+p{
+    @extend %align;
+}
+
+.footer {
+    overflow: hidden;
+    margin-top: 0;
+    background-color: #24262b;
+    padding: 70px 0;
+    justify-content: center;
+  }

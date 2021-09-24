@@ -1,104 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-    <title>Amerika</title>
-    <style>
-        *{
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
-        body{
-            background-color: rgb(219, 208, 208);
-        }
-        .row{
-            background-color: white;
-            border-radius: 30px;
-            box-shadow: 12px 12px 22px grey;
-        }
-        img{
-            border-top-left-radius: 30px;
-            border-bottom-left-radius: 30px;
-        }
-        .btn1{
-            border:none;
-            outline: none;
-            height: 50px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .btn1:hover{
-            background: white;
-            border: 1px solid;
-            color: black;
-        }
-    </style>
-</head>
-<body>
-     <!--Jumbotron-->
-    <div class="jumbotron" style="margin-bottom:0">
+{% extends "layout.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content%}
+
+<!--Jumbotron-->
+<div class="jumbotron" style="margin-bottom:0">
     <h1>"Ideas come from everything”</h1>
-    <p>Alfred Hitchcock</p>
-    </div>
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-        <a class="navbar-brand" href="#">Home</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Title</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Author</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Year of Released</a>
-            </li>    
-          </ul>
-        </div>  
-      </nav>
-    <section class="Form my-4 mx-5">
-        <div class="container">
-            <div class="row no-gutters">
-                <div class="col-lg-5">
-                    <img src="../img/fontform.jpg" class="img-fluid" alt="" style="height: 100%; width: 100%;">
-                </div>
-                <div class="col-lg-7 px-5 pt-5">
-                    <h1>Logo</h1>
-                    <h4>Sign into your account</h4>
-                    <form>
-                        <div class="form-row">
-                            <div class="col-lg-7">
-                                <input type="email" placeholder="Email-Address" class="form-control my-3 p-4">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-lg-7">
-                                <input type="password" placeholder="*************" class="form-control">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-lg-7">
-                                <button type="button" class="btn1 mt-3 mb-5">Login</button>
-                            </div>
-                        </div>
-                        <a href="#">Forgot password?</a>
-                        <p>Don't have an account yet? <a href="./register.html">Register here</a></p>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-</body>
-</html>
+    <p class="quote"> Amerika is a local repository with a briefing review of over thousands books of all the time</p>
+    <a href="/templates/register.html" class="btn-btn-info" role="button">Register</a>    
+</div>
+
+<div class="temp">
+    <img src="../img/fontform2.jpg" alt="" width="100%"> 
+</div>
+ 
+{% endblock %}
