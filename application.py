@@ -182,20 +182,18 @@ def data_book(isbn):
         comments = db.execute("SELECT COUNT(review) FROM ((reviews JOIN books_list on reviews.book_isbn = books_list.isbn) JOIN users ON reviews.user_id = users.id_users) WHERE books_list.isbn = :book AND reviews.comments != '' ", {"book":book['isbn']}).fetchone()
 
         if not rating_count[0] == 0:
-            
+
 @app.route("/book_search/<text:type>", methods=["POST"])
 @login_required
 def results:
     """Search Results"""
     if request.method == 'POST':
 
-        if type == 'isbn':
-            isbn = request.form.get('isbn')
             # Result for search
-            res = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
+            res = db.execute("SELECT isbn, title, author FROM books_list WHERE isbn = :isbn, title = :title, author = :author", {"isbn": isbn, "title": title, "author": author}).fetchmany()
 
             if res:
-                search = f'Match by ISBN "{isbn}"'
+                search = f'Match by ISBN "{isbn}{title}{author}"'
                 return render_template("book_search.html")
             
             elif not res:
@@ -211,8 +209,7 @@ def results:
                     search = f'No matches for "{isbn}"'
                     return render_template("results.html")
 
-        elif type == 'title'
-
+        elif type == 'title':
             title = request.form.get('title')
                 # Result for search
                 res = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
@@ -234,7 +231,7 @@ def results:
                         search = f'No matches for "{title}"'
                         return render_template("results.html")
 
-        elif type == 'author'
+        elif type == 'author':
 
             title = request.form.get('author')
                 # Result for search
@@ -257,7 +254,7 @@ def results:
                         search = f'No matches for "{author}"'
                         return render_template("results.html") 
 
-        elif type == 'published_yr'
+        elif type == 'published_yr':
 
             title = request.form.get('published_yr')
                 # Result for search
@@ -282,7 +279,9 @@ def results:
     else:
         return render_template("book_search.html")
         flash("Something went wrong")       
-                       
+
+
+
 
 # @app.route("/api/<text:isbn>", methods=["GET"])
 # def api_book(isbn):
@@ -311,4 +310,3 @@ def results:
 #         "review": data["books_list"][0]['ratings_count'],
 #         "points": data['books_list'][0]['average_rating']
 #     })
-
