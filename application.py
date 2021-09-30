@@ -173,6 +173,7 @@ def data_book(isbn):
 
     if request.method == "GET":
         
+        user = session['user_id']
         # Query for the details
         book = db.execute("SELECT books_list WHERE isbn LIKE = :isbn", {"isbn": isbn}).fetchone()
 
@@ -181,19 +182,31 @@ def data_book(isbn):
 
         comments = db.execute("SELECT COUNT(review) FROM ((reviews JOIN books_list on reviews.book_isbn = books_list.isbn) JOIN users ON reviews.user_id = users.id_users) WHERE books_list.isbn = :book AND reviews.comments != '' ", {"book":book['isbn']}).fetchone()
 
-        if not rating_count[0] == 0:
+        query_book = db.execute('SELECT book_isbn FROM books_list WHERE isbn = :isbn',{"isbn":isbn})
+
+        data = query_book.fetchone()
+        book = data[0]
+
+        review = db.execute("SELECT * FROM reviews WHERE user_id = :user_id AND book_isbn = :book_isbn", {"user_id": user, "book_isbn": book})
+
+        if review.rowcount == 1:
+            flash("You already reviewed this book")
+            return render_template("data_book.html")
+        
+        
+
 
 @app.route("/book_search/<text:type>", methods=["POST"])
 @login_required
-def results:
+def results(isbn):
     """Search Results"""
     if request.method == 'POST':
 
             # Result for search
-            res = db.execute("SELECT isbn, title, author FROM books_list WHERE isbn = :isbn, title = :title, author = :author", {"isbn": isbn, "title": title, "author": author}).fetchmany()
+            res = db.execute("SELECT isbn, title, author FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
 
             if res:
-                search = f'Match by ISBN "{isbn}{title}{author}"'
+                search = f'Match by ISBN "{isbn}"'
                 return render_template("book_search.html")
             
             elif not res:
@@ -209,8 +222,8 @@ def results:
                     search = f'No matches for "{isbn}"'
                     return render_template("results.html")
 
-        elif type == 'title':
-            title = request.form.get('title')
+            elif type == 'title':
+                title = request.form.get('title')
                 # Result for search
                 res = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
 
@@ -231,9 +244,9 @@ def results:
                         search = f'No matches for "{title}"'
                         return render_template("results.html")
 
-        elif type == 'author':
+            elif type == 'author':
 
-            title = request.form.get('author')
+                title = request.form.get('author')
                 # Result for search
                 res = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
 
@@ -254,28 +267,28 @@ def results:
                         search = f'No matches for "{author}"'
                         return render_template("results.html") 
 
-        elif type == 'published_yr':
+                elif type == 'published_yr':
 
-            title = request.form.get('published_yr')
-                # Result for search
-                res = db.execute("SELECT * FROM books_list WHERE published_yr = :published_yr", {"published_yr": published_yr}).fetchmany()
+                    title = request.form.get('published_yr')
+                    # Result for search
+                    res = db.execute("SELECT * FROM books_list WHERE published_yr = :published_yr", {"published_yr": published_yr}).fetchmany()
 
-                if res:
-                    search = f'Match by published_yr "{published_yr}"'
-                    return render_template("book_search.html")
-                
-                elif not res:
-                    #query for a partial result on the database
-                    query = '%' + title + '%'
+                    if res:
+                        search = f'Match by published_yr "{published_yr}"'
+                        return render_template("book_search.html")
+                    
+                    elif not res:
+                        #query for a partial result on the database
+                        query = '%' + title + '%'
 
-                    coincidences = db.execute("SELECT * FROM books_list WHERE published_yr LIKE :published_yr ORDER BY published_yr", {"published_yr" :query}).fetchmany()
+                        coincidences = db.execute("SELECT * FROM books_list WHERE published_yr LIKE :published_yr ORDER BY published_yr", {"published_yr" :query}).fetchmany()
 
-                    match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE published_yr LIKE :published_yr ORDER BY published_yr", {"published_yr" :query}).fetchone()
-                    match_res = match_res[0]
+                        match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE published_yr LIKE :published_yr ORDER BY published_yr", {"published_yr" :query}).fetchone()
+                        match_res = match_res[0]
 
-                    if not query:
-                        search = f'No matches for "{published_yr}"'
-                        return render_template("results.html") 
+                        if not query:
+                            search = f'No matches for "{published_yr}"'
+                            return render_template("results.html") 
     else:
         return render_template("book_search.html")
         flash("Something went wrong")       
