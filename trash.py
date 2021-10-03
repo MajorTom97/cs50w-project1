@@ -38,3 +38,33 @@
         # if book.rowcount == 1:
         #     flash("You already reviewed this book")
         #     return render_template("data_book.html")
+
+
+
+# @app.route("/api/<text:isbn>", methods=["GET"])
+# def api_book(isbn):
+
+#     """Call the Api from google books"""
+#     if request.method == 'GET':
+#         book=db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+
+#     if not book:
+#         return jsonify('Ohh Ohhh We did not found it!'), 403
+    
+#     #Goodreads data
+#     route = request.get("", params={"key": GOODREADS_API_KEY, "isbn":book_isbn})
+#     if route != 200:
+#         raise Exception("ERROR: API request unsuccessful!")
+#     data = route.json
+
+#     if data['books_list'][0]['ratings_count'] == 0 or not data['books'][0]['work_ratings_count']:
+#         data['books_list'][0]['average_rating'] = "None"  
+    
+#     return  jsonify({
+#         "title": book.title;
+#         "author": book.author;
+#         "year": book.year;
+#         "isbn": book.isbn;
+#         "review": data["books_list"][0]['ratings_count'],
+#         "points": data['books_list'][0]['average_rating']
+#     })

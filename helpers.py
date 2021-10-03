@@ -58,11 +58,10 @@ def api_call(isbn):
         volume=response["items"][0]["volumeInfo"]
 
         if not volume:
-	        print("no nos llego datos")
+	        print("No files")
     except:
-        print("lol")
+        print("Something went wrong")
     
-    #////////////////////////////////////////////////
     try:
         if not 'ratingsCount' in response:
 	 
@@ -72,54 +71,41 @@ def api_call(isbn):
         data_book["ratingsCount"]="No Description"
         pprint.pprint(data_book)
 
-	 #////////////////////////////////////////////////
     try:
 
-        if not 'averageRating' in response:
-
-	    		 
+        if not 'averageRating' in response:	 
 	        data_book["averageRating"]=volume["averageRating"]
 	        print(data_book)	 
     except:
         data_book["averageRating"]="No Description"
         pprint.pprint(data_book)
-	
-     #////////////////////////////////////////////////
+
     
     try:
         if  not 'authors' in response:
-
-	 
 	        data_book["authors"]=volume["authors"]
 	        print(data_book)	 
     except:
         data_book["authors"]="No Description"
         pprint.pprint(data_book)
     
-     #////////////////////////////////////////////////
     try:
         if not 'title' in response:
-
-
 	        data_book["title"]=volume["title"]
 	        print(data_book)	 
     except:
         data_book["title"]="No Description"
         pprint.pprint(data_book)
         
-     #////////////////////////////////////////////////
     try:
         if not'publishedDate' in response:
-
-	 		 
 	        data_book["years"]=volume["publishedDate"]
 	        print(data_book)	
     except:
 
         data_book["years"]="No Description"
         pprint.pprint(data_book)
-        
-      #////////////////////////////////////////////////
+
     try :
         if not 'description' in response:
 
@@ -129,8 +115,7 @@ def api_call(isbn):
 	        
     except:
         data_book["description"]="No Description"
-    print("00000000000000000000000000000000000000000000000000")
     pprint.pprint(data_book)
     return data_book
-    print("00000000000000000000000000000000000000000000000000")
+
 
