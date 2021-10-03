@@ -106,58 +106,58 @@ def register():
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
-    #Check if an username already exists
-    if db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone():
-        
-        if not request.form.get("email"):
-            return render_template("error_apology.html", message="Opsss! You must provide an email account!")
+        #Check if an username already exists
+        if db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone():
+            
+            if not request.form.get("email"):
+                return render_template("error_apology.html", message="Opsss! You must provide an email account!")
 
-        # Si no se introduce usuario, enviar mensaje de error!
-        if not request.form.get("username"):
-            return render_template("error_apology.html", message="You must bring an username!")
+            # Si no se introduce usuario, enviar mensaje de error!
+            if not request.form.get("username"):
+                return render_template("error_apology.html", message="You must bring an username!")
 
-        # Si no se ingresa una cotraseña, enviar mensaje de error!
-        elif not request.form.get("password"):
-            return render_template("error_apology.html", message="You must bring a password")
+            # Si no se ingresa una cotraseña, enviar mensaje de error!
+            elif not request.form.get("password"):
+                return render_template("error_apology.html", message="You must bring a password")
 
-        # Confirmacion de Contraseña
-        elif not request.form.get("confirmation"):
-            return render_template("error_apology.html", message="Opsss! It seems that you forget your password")
+            # Confirmacion de Contraseña
+            elif not request.form.get("confirmation"):
+                return render_template("error_apology.html", message="Opsss! It seems that you forget your password")
 
-        # Si las contraseñas no coinciden, enviar mensaje de error!
-        elif not request.form.get("confirmation") == request.form.get("password"):
-            return render_template("error_apology.html", message="Password does not match!")
-        # Hash de Contraseña
-        hash_contraseña = generate_password_hash(request.form.get("password"))
+            # Si las contraseñas no coinciden, enviar mensaje de error!
+            elif not request.form.get("confirmation") == request.form.get("password"):
+                return render_template("error_apology.html", message="Password does not match!")
+            # Hash de Contraseña
+            hash_contraseña = generate_password_hash(request.form.get("password"))
 
-        
-        # Validate per email
-        email_val = db.execute("SELECT COUNT(email) AS TOTAL FROM users WHERE email :email",{"email": email}).mappings().all()
-        
-        if db.execute("SELECT * FROM users WHERE email = :email", {"email": email}).fetchone():
+            
+            # Validate per email
+            email_val = db.execute("SELECT COUNT(email) AS TOTAL FROM users WHERE email :email",{"email": email}).mappings().all()
+            
+            if db.execute("SELECT * FROM users WHERE email = :email", {"email": email}).fetchone():
 
-            try:
+                try:
 
-                new_user = db.execute("INSERT INTO users(username, hash, email) VALUES(:username, :hash, :email) returning id_users, username, hash, email",
-                                        {"username":request.form.get("username"),
-                                        "hash":hash_contraseña,
-                                        "email":request.form.get("email")
-                                        }).fetchone()
-                db.commit()
+                    new_user = db.execute("INSERT INTO users(username, hash, email) VALUES(:username, :hash, :email) returning id_users, username, hash, email",
+                                            {"username":request.form.get("username"),
+                                            "hash":hash_contraseña,
+                                            "email":request.form.get("email")
+                                            }).fetchone()
+                    db.commit()
 
-                print(new_user)
-                session["user_id"] = new_user["id_users"]
-                session["username"] = new_user["username"]
-                username=session["username"]
-        
-            except Exception as err:
-                print(err)
-                flash("This user already exists! Try it with another username")
+                    print(new_user)
+                    session["user_id"] = new_user["id_users"]
+                    session["username"] = new_user["username"]
+                    username=session["username"]
+            
+                except Exception as err:
+                    print(err)
+                    flash("This user already exists! Try it with another username")
 
-        if not new_user:
-            return render_template("error_apology.html")
+            if not new_user:
+                return render_template("error_apology.html")
 
-        flash("Success!")
+            flash("Success!")
 
         # Retornar pagina de Inicio
         return redirect(url_for("login"))
@@ -166,7 +166,7 @@ def register():
     else:
         return render_template("register.html", message="Please register over here!")
 
-@app.route("/book_search/<text:isbn>", methods=["GET", "POST"])
+@app.route("/book_search/<string:isbn>", methods=["GET", "POST"])
 @login_required
 def data_book(isbn):
     """Show the details of the book"""
@@ -202,7 +202,7 @@ def data_book(isbn):
             db.commit()
         return redirect("/data_book/"+isbn)
 
-@app.route("/book_search/<text:type>", methods=["POST"])
+@app.route("/book_search/<string:type>", methods=["POST"])
 @login_required
 def results(isbn):
     """Search Results"""
