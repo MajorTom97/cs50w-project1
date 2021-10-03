@@ -310,13 +310,19 @@ def api_call(isbn):
 
     elif api_rev == None:
         flash(f'Something went wrong!')
-    
-    else:
-        return jsonify({
-        'title': api_book.title,
-        'author': api_book.author,
-        'year':api_book.published_yr,
-        'isbn': api_book.isbn,
-        'average_score': api_book.points,
-        'review_counts': api_book.reviews
-        })
+
+    print(api_book.title)
+    print(api_book.author)
+    print(api_book.published_yr)
+    print(api_book.isbn)
+    print(api_book.points)
+    print(api_book.reviews)
+    # else:
+    #     return jsonify({
+    #     'title': api_book.title,
+    #     'author': api_book.author,
+    #     'year':api_book.published_yr,
+    #     'isbn': api_book.isbn,
+    #     'average_score': api_book.points,
+    #     'review_counts': api_book.reviews
+    #     })
