@@ -108,11 +108,7 @@ def api_call(isbn):
 
     try :
         if not 'description' in response:
-
-
-		 
-	        data_book["description"]=volume["description"]
-	        
+	        data_book["description"]=volume["description"] 
     except:
         data_book["description"]="No Description"
     pprint.pprint(data_book)

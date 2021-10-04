@@ -1,4 +1,5 @@
 import os
+from re import search
 import requests
 import json
 
@@ -39,7 +40,7 @@ def login():
 
         username = request.form.get("username")
         # Ensure username was submitted
-        user_conf = db.execute("SELECT * FROM users WHERE username = :username",{"username": username}).fetchone()
+        # user_conf = db.execute("SELECT * FROM users WHERE username = :username",{"username": username}).fetchone()
         if not request.form.get("username"):
             return render_template("error_apology.html", message="The username does not exist")
 
@@ -49,20 +50,27 @@ def login():
 
         # Query database for username
         # Check if the user alredy exists or not
-        rows = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchall()
+        rows = db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone()
 
         # Ensure username exists and password is correct
-        if not len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return render_template("error_apology.html", message="Something went wrong, check it!")
+        if rows != None:
+            passw_hash = rows["hash"]
+            print("---------PASSW-HASH----------")
+            print(passw_hash)
+            if check_password_hash(passw_hash, request.form.get("password")):
+                # Remember which user has logged in
+                session["user_id"] = rows[0]
+                session["username"] = rows[1]
+                session["logged_up"] = True
 
-        # Remember which user has logged in
-        session["user_id"] = user_conf[0]
-        session["username"] = user_conf[1]
-        session["logged_up"] = True
-
-        # Redirect user to home page
-        flash ("You were looged up!!!")
-        return redirect("/")
+                return render_template("book_search.html")
+            else:
+                flash("Password does not match!!!")
+                return render_template("register.html")
+        else:
+            # Redirect user to home page
+            flash ("User does not exists!!!")
+            return redirect("/register")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -82,13 +90,25 @@ def logout():
 @login_required
 def index():
     """Loads index page with the search box"""
-    return render_template("index.html")
+    if session["username"]:
+
+        return render_template("book_search.html")
+    else:
+        return redirect("/register")
 
 @app.route("/book_search", methods=["GET", "POST"])
 @login_required
 def book_search():
     """Search Page"""
-    return render_template("book_search.html")
+    if request.method == 'GET':
+        search = request.args.get("search")
+        search = f"%{search}%"
+        res = db.execute("SELECT * FROM books_list WHERE isbn ILIKE  :search OR title ILIKE  :search OR author ILIKE  :search", {"search":search}).fetchall()
+        
+        if not res:
+            return render_template("error_apology.html")
+    
+        return render_template("book_search.html", books=res)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -107,8 +127,9 @@ def register():
         confirmation = request.form.get("confirmation")
 
         #Check if an username already exists
-        if db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone():
-            
+        if not db.execute("SELECT * FROM users WHERE username = :username", {"username": username}).fetchone():
+            print("-----------------------------")
+            print("IN")
             if not request.form.get("email"):
                 return render_template("error_apology.html", message="Opsss! You must provide an email account!")
 
@@ -128,45 +149,45 @@ def register():
             elif not request.form.get("confirmation") == request.form.get("password"):
                 return render_template("error_apology.html", message="Password does not match!")
             # Hash de Contraseña
-            hash_contraseña = generate_password_hash(request.form.get("password"))
+            hash_contrasena = generate_password_hash(password)
 
-            
+        
             # Validate per email
-            email_val = db.execute("SELECT COUNT(email) AS TOTAL FROM users WHERE email :email",{"email": email}).mappings().all()
+            # email_val = db.execute("SELECT COUNT(email) AS TOTAL FROM users WHERE email :email",{"email": email}).mappings().all()
+            email_check = db.execute("SELECT * FROM users WHERE email=:email", {"email": email}).fetchone()
             
-            if db.execute("SELECT * FROM users WHERE email = :email", {"email": email}).fetchone():
+            if email_check:
+                # db.execute("SELECT * FROM users WHERE email = :email", {"email": email}).fetchone():
+                flash('Email already used')
+                return render_template("register.html")
 
-                try:
-
-                    new_user = db.execute("INSERT INTO users(username, hash, email) VALUES(:username, :hash, :email) returning id_users, username, hash, email",
-                                            {"username":request.form.get("username"),
-                                            "hash":hash_contraseña,
-                                            "email":request.form.get("email")
+            new_user = db.execute("INSERT INTO users(username, hash, email) VALUES(:username, :hash, :email) returning id_users, username",\
+                                            {"username":username,
+                                            "hash":hash_contrasena,
+                                            "email": email
                                             }).fetchone()
-                    db.commit()
-
-                    print(new_user)
-                    session["user_id"] = new_user["id_users"]
-                    session["username"] = new_user["username"]
-                    username=session["username"]
+            db.commit()
+            print("-------------------NEW USER---------------------")
             
-                except Exception as err:
-                    print(err)
-                    flash("This user already exists! Try it with another username")
-
-            if not new_user:
-                return render_template("error_apology.html")
-
+            print(new_user)
+            session["user_id"] = new_user["id_users"]
+            session["username"] = new_user["username"]
+            
+            print("--------------------USER_ID---------------------")
+            id = session["user_id"]
+            print(id)
             flash("Success!")
 
-        # Retornar pagina de Inicio
-        return redirect(url_for("login"))
-
+            # Retornar pagina de Inicio
+            return redirect(url_for("login"))
+        
+        else:
+            return redirect(url_for("login"))
     # Retornar a plantilla register, al cual usuario accede al hacer click en button register
     else:
         return render_template("register.html", message="Please register over here!")
 
-@app.route("/book_search/<string:isbn>", methods=["GET", "POST"])
+@app.route("/data_book/<string:isbn>", methods=["GET", "POST"])
 @login_required
 def data_book(isbn):
     """Show the details of the book"""
@@ -175,14 +196,60 @@ def data_book(isbn):
         
         user = session['user_id']
 
-        review = db.execute("SELECT username, review, points FROM users JOIN reviews ON users.user_id = reviews.user_id WHERE isbn = :isbn", {"isbn":isbn}).fetchall()
+        # review = db.execute("SELECT username, review, points FROM users JOIN reviews ON users.id_users = reviews.user_id WHERE isbn = :isbn", {"isbn":isbn}).fetchall()
 
         # Query for the details
-        book = db.execute("SELECT books_list WHERE isbn LIKE = :isbn", {"isbn": isbn}).fetchone()
-        print(book)
+        books = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
+        print(books)
 
         res = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn).json()
-        
+        if res["totalItems"] > 0:
+            try:
+                if not 'description' in res:
+                    description = res["items"][0]["volumeInfo"]["description"]
+            except:
+                description = "No Description"
+
+            print(description)
+            try:
+                if not 'averageRating' in res:
+                    average = res["items"][0]["volumeInfo"]["averageRating"]
+            except:
+                average = "No Average Rating"
+
+            print(average)
+
+            try:
+                if not 'ratingsCount' in res:
+                    rating = res["items"][0]["volumeInfo"]["ratingsCount"]
+            except:
+                rating = "No Rating Counts"
+
+            print(rating)
+
+            try:
+                if not'publishedDate' in res:
+	                published = res["items"][0]["volumeInfo"]["publishedDate"]	
+            except:
+                published = "No Data"
+            
+            try:
+                if 'imageLinks' or 'smallThumbnail' in res:
+                    image = res["items"][0]["volumeInfo"]["imageLinks"]["smallThumbnail"]
+            except:
+                image = "https://th.bing.com/th/id/R.729a2542c430580f2c22fbe68761f171?rik=HD0SAHt6cSZnnw&pid=ImgRaw&r=0"
+            
+            
+            data_book = {
+                'imageLinks': image,
+                'description': description,
+                'averageRating': average,
+                'ratingsCount': rating,
+                'publishedDate': published
+            }
+            return render_template("results.html", data_book=data_book, books=books)
+
+            
     else:
         reviews = request.form.get("review")
         points = request.form.get("points")
@@ -193,7 +260,7 @@ def data_book(isbn):
         query = db.execute("SELECT * FROM reviews WHERE isbn = :isbn AND user_id = :user_id", {"isbn" :isbn, "user_id" :user_id})
 
         if query.rowcount == 1:
-            flash(f'You already reiwed this book')
+            flash(f'You already reviewed this book')
             return redirect("/data_book/"+isbn)
         else:
             points = int(points)
@@ -202,7 +269,7 @@ def data_book(isbn):
             db.commit()
         return redirect("/data_book/"+isbn)
 
-@app.route("/book_search/<string:type>", methods=["POST"])
+@app.route("/book_res/<string:type>", methods=["POST"])
 @login_required
 def results(isbn):
     """Search Results"""

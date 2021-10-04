@@ -6,7 +6,7 @@ function validate() {
     var username = document.getElementbyId("username: ").value;
     var password = document.getElementbyId("password: ").value;
     var email = document.getElementbyId("email: ").value();
-    if (username == ull  || username == ""){
+    if (username == null  || username == ""){
         alert("Enter an username!")
         return false;
     }

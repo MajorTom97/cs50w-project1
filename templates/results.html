@@ -6,17 +6,17 @@ We have found!
 
 {% block content %}
 <div class="books_list">
-    {% for book in books_list %}
     <div class="book">
-        <h2 class="book-title">{{book['title']}}</h2>
+        <h2 class="book-title">{{books.title}}</h2>
         <div class="book-cover">
-            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-M.jpg" alt="">
+            <img src="{{data_book.imageLinks}}" alt="">
         </div>
-        <h5 class="book-ft">ISBN: {{book.isbn}}</h5>
-        <h5 class="book-ft">Author: {{book.author}}</h5>
-        <h5 class="book-ft">Published Year: {{book.published_yr}}</h5>
-        <button type="button" class="btn btn-info">
-            <a href="/book/{{book.isbn}}" class="b-link">See it</a>
-        </button>
+        <h5 class="book-ft">ISBN: {{books.isbn}}</h5>
+        <h5 class="book-ft">Author: {{books.author}}</h5>
+        <h5 class="book-ft">Published Year: {{data_book.publishedDate}}</h5>
+        <h5 class="book-ft">Rating: {{data_book.ratingsCount}}</h5>
+        <h5 class="book-ft">Average Score: {{data_book.averageRating}}</h5>
+        <h5 class="book-ft">Description: {{data_book.description}}</h5>
     </div>
 </div>
+{% endblock %}

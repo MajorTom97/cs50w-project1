@@ -22,16 +22,13 @@
     {% if session.user_id %}
     <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll" style="max-height: 100px;">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/book_search">Home<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Title</a>
+        <a class="nav-link" href="#">{{session['username']}}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Author</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Year of Released</a>
+        <a class="nav-link" href="/logout">Log out</a>
       </li>
     </ul>
     {% else %}
@@ -39,10 +36,6 @@
       <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
       <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
     </ul>
-    <form class="d-flex">
-      <input class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
     {% endif %}
   </div>
 </nav>
