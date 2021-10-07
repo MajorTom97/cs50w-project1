@@ -2,6 +2,7 @@ import os
 from re import search
 import requests
 import json
+import math
 
 from flask import Flask, session
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
@@ -196,7 +197,7 @@ def data_book(isbn):
         
         user = session['user_id']
 
-        # review = db.execute("SELECT username, review, points FROM users JOIN reviews ON users.id_users = reviews.user_id WHERE isbn = :isbn", {"isbn":isbn}).fetchall()
+        review = db.execute("SELECT username, review, points FROM users JOIN reviews ON users.id_users = reviews.user_id WHERE book_isbn = :isbn", {"isbn":isbn}).fetchall()
 
         # Query for the details
         books = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
@@ -247,7 +248,10 @@ def data_book(isbn):
                 'ratingsCount': rating,
                 'publishedDate': published
             }
-            return render_template("results.html", data_book=data_book, books=books)
+            return render_template("results.html", data_book=data_book, books=books, reviews=review)
+        
+        else:
+            return render_template("error_apology.html")
 
             
     else:
@@ -257,139 +261,55 @@ def data_book(isbn):
         print(reviews)
         print(points)
 
-        query = db.execute("SELECT * FROM reviews WHERE isbn = :isbn AND user_id = :user_id", {"isbn" :isbn, "user_id" :user_id})
+        query = db.execute("SELECT * FROM reviews WHERE book_isbn = :isbn AND user_id = :user_id", {"isbn" :isbn, "user_id" :user_id})
 
         if query.rowcount == 1:
             flash(f'You already reviewed this book')
             return redirect("/data_book/"+isbn)
         else:
             points = int(points)
-            insert_rev = db.execute("INSERT INTO reviews(user_id, isbn, review, points) VALUES (:user_id, :isbn, :review, :points)", {"user_id":user_id,"isbn":isbn, "review":reviews, "points": points})
-
+            insert_rev = db.execute("INSERT INTO reviews( book_isbn, user_id, review, points) VALUES ( :isbn, :user_id, :review, :points)", {"isbn":isbn, "user_id":user_id, "review":reviews, "points": points})
+            
             db.commit()
         return redirect("/data_book/"+isbn)
-
-@app.route("/book_res/<string:type>", methods=["POST"])
-@login_required
-def results(isbn):
-    """Search Results"""
-    if request.method == 'POST':
-
-            # Result for search
-            res = db.execute("SELECT isbn, title, author FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchmany()
-
-            if res:
-                search = f'Match by ISBN "{isbn}"'
-                return render_template("book_search.html")
-            
-            elif not res:
-                #query for a partial result on the database
-                query = '%' + isbn + '%'
-
-                coincidences = db.execute("SELECT * FROM books_list WHERE isbn LIKE :isbn ORDER BY isbn", {"isbn" :query}).fetchmany()
-
-                match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE isbn LIKE :isbn ORDER BY isbn", {"isbn" :query}).fetchone()
-                match_res = match_res[0]
-
-                if not query:
-                    search = f'No matches for "{isbn}"'
-                    return render_template("results.html")
-
-            elif type == 'title':
-                title = request.form.get('title')
-                # Result for search
-                res = db.execute("SELECT * FROM books_list WHERE UPPER (title) = :title", {"title": title.upper()}).fetchmany()
-
-                if res:
-                    search = f'Match by Title "{title}"'
-                    return render_template("book_search.html")
-                
-                elif not res:
-                    #query for a partial result on the database
-                    query = '%' + title + '%'
-
-                    coincidences = db.execute("SELECT * FROM books_list WHERE UPPER (title) LIKE :title ORDER BY title", {"title" :query.upper()}).fetchmany()
-
-                    match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE title LIKE :title ORDER BY title", {"title" :query}).fetchone()
-                    match_res = match_res[0]
-
-                    if not query:
-                        search = f'No matches for "{title}"'
-                        return render_template("results.html")
-
-            elif type == 'author':
-
-                author = request.form.get('author')
-                # Result for search
-                res = db.execute("SELECT * FROM books_list WHERE UPPER (author) = :author", {"author": author.upper()}).fetchmany()
-
-                if res:
-                    search = f'Match by Author "{author}"'
-                    return render_template("book_search.html")
-                
-                elif not res:
-                    #query for a partial result on the database
-                    query = '%' + author + '%'
-
-                    coincidences = db.execute("SELECT * FROM books_list WHERE UPPER (author) LIKE :author ORDER BY author", {"author" :query.upper()}).fetchmany()
-
-                    match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE title LIKE :author ORDER BY author", {"author" :query}).fetchone()
-                    match_res = match_res[0]
-
-                    if not query:
-                        search = f'No matches for "{author}"'
-                        return render_template("results.html") 
-
-                elif type == 'published_yr':
-
-                    published_yr = request.form.get('published_yr')
-                    # Result for search
-                    res = db.execute("SELECT * FROM books_list WHERE UPPER (published_yr) = :published_yr", {"published_yr": published_yr.upper()}).fetchmany()
-
-                    if res:
-                        search = f'Match by published_yr "{published_yr}"'
-                        return render_template("book_search.html")
-                    
-                    elif not res:
-                        #query for a partial result on the database
-                        query = '%' +published_yr + '%'
-
-                        coincidences = db.execute("SELECT * FROM books_list WHERE UPPER (published_yr) LIKE :published_yr ORDER BY published_yr", {"published_yr" :query.upper()}).fetchmany()
-
-                        match_res = db.execute("SELECT COUNT (*) FROM books_list WHERE published_yr LIKE :published_yr ORDER BY published_yr", {"published_yr" :query}).fetchone()
-                        match_res = match_res[0]
-
-                        if not query:
-                            search = f'No matches for "{published_yr}"'
-                            return render_template("results.html") 
-    else:
-        return render_template("book_search.html")
-    flash("Something went wrong")       
-
+     
 
 @app.route("/api/<isbn>", methods=['GET'])
 def api_call(isbn):
     api_book = db.execute("SELECT * FROM books_list WHERE isbn = :isbn", {"isbn": isbn}).fetchone()
-    api_rev = db.execute("SELECT id_review, points FROM reviews WHERE isbn = :isbn", {"isbn":isbn}).fetchone()
+    api_rev = db.execute("SELECT COUNT(id_review) AS count, ROUND(AVG(points),2) AS point FROM reviews WHERE book_isbn = :isbn", {"isbn":isbn}).fetchone()
+    print(dict(api_rev))
 
     if api_book == None:
-        flash(f"Something went wrong!")
+        return jsonify({
+            'ERROR':'Not Found'
+        })
 
     elif api_rev == None:
-        flash(f'Something went wrong!')
+        return jsonify({
+            'ERROR':'Not Found'
+        })
+    else:
+        if api_rev.point is None:
+            point = 0
+        else:
+            point=float(api_rev.point)   
+        print("---------------")
+        print(api_rev)
+        print(api_book)
+        print("---------------")  
+        print(api_book.title)
+        print(api_book.author)
+        print(api_book.published_yr)
+        print(api_book.isbn)
+        print(point)
+        print(api_rev.count)
 
-    print(api_book.title)
-    print(api_book.author)
-    print(api_book.published_yr)
-    print(api_book.isbn)
-    print(api_book.points)
-    print(api_book.reviews)
-    # else:
-    #     return jsonify({
-    #     'title': api_book.title,
-    #     'author': api_book.author,
-    #     'year':api_book.published_yr,
-    #     'isbn': api_book.isbn,
-    #     'average_score': api_book.points,
-    #     'review_counts': api_book.reviews
-    #     })
+        return jsonify({
+        'title': api_book.title,
+        'author': api_book.author,
+        'year':api_book.published_yr,
+        'isbn': api_book.isbn,
+        'average_score': point,
+        'review_counts': api_rev.count
+        })

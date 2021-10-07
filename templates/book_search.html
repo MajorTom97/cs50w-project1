@@ -6,20 +6,20 @@ Search for Book
 
 {% block content %}
 <h2>Search for...</h2>
-
-<!-- Search books by ISBN-->
-<form action="{{url_for('book_search')}}" method="GET">
-    <div class="form-group">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search by ISBN, Author or Title" name="search">
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-dark">Search</button>
+<div class="container">
+    <!-- Search books by ISBN-->
+    <form action="{{url_for('book_search')}}" method="GET">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Search by ISBN, Author or Title" name="search">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-dark">Search</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
 
-<div class="container">
+
     <table class="table">
         <thead class="table-bordered">
             <tr>
@@ -41,31 +41,5 @@ Search for Book
         </tbody>
     </table>
 </div>
-<!-- Search books by Author
-<form action="{{url_for('results', type='author')}}" method="POST">
-    <div class="form-group">
-        <label for="author">Search by Author</label>
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Author" name="author">
-            <div class="input-group-append">
-                <button type="button" class="btn btn-dark">Search</button>
-            </div>
-        </div>
-    </div>
-</form>
-
-<Search books by Book Title
-<form action="{{url_for('results', type='title')}}" method="POST">
-    <div class="form-group">
-        <label for="author">Search by Book Title</label>
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Book Title" name="title">
-            <div class="input-group-append">
-                <button type="button" class="btn btn-dark">Search</button>
-            </div>
-        </div>
-    </div>
-</form>
--->
 
 {% endblock %}

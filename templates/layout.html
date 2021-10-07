@@ -12,9 +12,15 @@
     <title>Amerika Repository: {% block title %}{% endblock %}</title>
 </head>
 <body>
+  
+<!--Jumbotron-->
+<div class="jumbotron" style="margin-bottom:0">
+  <h1>"Ideas come from everything”</h1>
+  <p class="quote"> Amerika is a local repository with a briefing review of over thousands books of all the time</p>   
+</div>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Amerika Repository</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+  <a class="navbar-brand text-white" href="#">Amerika Repository</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -22,19 +28,18 @@
     {% if session.user_id %}
     <ul class="navbar-nav mr-auto my-2 my-lg-0 navbar-nav-scroll" style="max-height: 100px;">
       <li class="nav-item active">
-        <a class="nav-link" href="/book_search">Home<span class="sr-only">(current)</span></a>
+        <a class="nav-link text-white mx-4" href="/book_search">Home<span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">{{session['username']}}</a>
+        <a class="nav-link btn btn-outline-success text-white  mx-4" href="#">{{session['username']}}</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/logout">Log out</a>
-      </li>
+      
     </ul>
+    <a class="nav-link text-white btn btn-warning mx-4" href="/logout">Log out</a>
     {% else %}
     <ul class="navbar-nav m1-auto mt-3">
-      <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-      <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+      <li class="nav-item mx-2"><a class="nav-link btn btn-warning" href="/register">Register</a></li>
+      <li class="nav-item mx-2"><a class="nav-link btn btn-success" href="/login">Log In</a></li>
     </ul>
     {% endif %}
   </div>

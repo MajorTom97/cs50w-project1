@@ -19,4 +19,51 @@ We have found!
         <h5 class="book-ft">Description: {{data_book.description}}</h5>
     </div>
 </div>
+
+<section>
+
+    <div class="row no-gutters">
+        <div class="col-8 col-md-8 col-lg-10">
+        <div class="card-shadow">
+            <div class="card-header bg-info">
+                <h5 class="card-title">Points</h5>
+            </div>
+        <!-- Your Review -->
+        <form class="form-border" method="post">
+            <div>
+                <label for="points"><span>Rate this book!</span></label>
+                <select name="points" id="points" class="form-control" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="points-input">
+                <textarea name="review" id="id_review" class="form-control" cols="30" rows="10" placeholder="Leave a comment!" required></textarea>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-points-warning">Submit</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+</section>
+
+<div class="user-reviews">
+    <h3>Reviews from other Amerikas</h3>
+    {% for review in reviews %}
+    <div class="list-group">
+        <div>
+            <h5 style="color: gray">{{review.username}} had said...</h5>
+            <p>{{review['review']}}</p>
+            <p>Points: {{review['points']}}</p>
+        </div>
+
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

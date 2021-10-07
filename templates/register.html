@@ -5,19 +5,29 @@
 {% endblock %}
 
 {% block content %}
-<form action="{{ url_for('register') }}" method="post">
-    <div class="form-group">
-        <input autocomplete="off" autofocus class="form-control" name="email" placeholder="E-mail" type="text"/>
+<div class="container">
+    <div class="row no-gutters">
+        <div class="col-lg-5">
+            <img src="../static/img/fontform2.jpg" class="img-fluid" alt="" style="height: 100%; width: 100%">
+        </div>
+        <div class="col-lg-7 px-5 pt-5">
+            <form action="{{ url_for('register') }}" method="post">
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="email" placeholder="E-mail" type="text"/>
+                </div>
+                <div class="form-group">
+                    <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text"/>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" name="password" placeholder="Password" type="password"/>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" name="confirmation" placeholder="Password Confirmation" type="password"/>
+                </div>
+                <button class="btn btn-primary" type="submit">Register</button>
+            </form> 
+        </div>
     </div>
-    <div class="form-group">
-        <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text"/>
-    </div>
-    <div class="form-group">
-        <input class="form-control" name="password" placeholder="Password" type="password"/>
-    </div>
-    <div class="form-group">
-        <input class="form-control" name="confirmation" placeholder="Password Confirmation" type="password"/>
-    </div>
-    <button class="btn btn-primary" type="submit">Register</button>
-</form>
+ 
+</div>
 {% endblock %}
